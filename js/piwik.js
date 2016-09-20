@@ -6577,7 +6577,7 @@ if (typeof window.Piwik !== 'object') {
             }
 
             // replace initialization array with proxy object
-            _paq = new TrackerProxy();
+            _paq = TrackerProxy();
 
             return tracker;
         }
