@@ -3079,7 +3079,10 @@ if (typeof window.Piwik !== 'object') {
                 hash = sha1,
 
                 // Domain hash value
-                domainHash;
+                domainHash,
+
+                configUserIsOffline = false;
+                configOfflineStorage = [];
 
             // Document title
             try {
@@ -3524,6 +3527,14 @@ if (typeof window.Piwik !== 'object') {
              * Send request
              */
             function sendRequest(request, delay, callback) {
+                if (configUserIsOffline) {
+                    if (configOfflineStorage && configOfflineStorage.push) {
+                        configOfflineStorage.push(request);
+                    }
+
+                    return;
+                }
+                
                 if (!configDoNotTrack && request) {
                     makeSureThereIsAGapAfterFirstTrackingRequestToPreventMultipleVisitorCreation(function () {
                         if (configRequestMethod === 'POST') {
@@ -3558,6 +3569,16 @@ if (typeof window.Piwik !== 'object') {
             function sendBulkRequest(requests, delay)
             {
                 if (!canSendBulkRequest(requests)) {
+                    return;
+                }
+
+                if (configUserIsOffline) {
+                    for (var i in requests) {
+                        if (configOfflineStorage && configOfflineStorage.push) {
+                            configOfflineStorage.push(requests[i]);
+                        }
+                    }
+
                     return;
                 }
 
@@ -6507,6 +6528,22 @@ if (typeof window.Piwik !== 'object') {
                     var fullRequest = getRequest(request, customData);
                     sendRequest(fullRequest, configTrackerPause, callback);
                 });
+            };
+
+            this.setUserOffline = function (storage) {
+                configUserIsOffline = true;
+
+                if ('object' === typeof storage && 'function' === typeof storage.push) {
+                    configOfflineStorage = storage;
+                }
+            };
+
+            this.setUserOnline = function (requests) {
+                configUserIsOffline = false;
+
+                if (requests && requests.length) {
+                    sendBulkRequest(requests);
+                }
             };
 
             Piwik.trigger('TrackerSetup', [this]);
