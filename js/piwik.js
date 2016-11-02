@@ -3081,7 +3081,7 @@ if (typeof window.Piwik !== 'object') {
                 // Domain hash value
                 domainHash,
 
-                configUserIsOffline = false;
+                configVisitorIsOffline = false;
                 configOfflineStorage = [];
 
             // Document title
@@ -3527,7 +3527,7 @@ if (typeof window.Piwik !== 'object') {
              * Send request
              */
             function sendRequest(request, delay, callback) {
-                if (configUserIsOffline) {
+                if (configVisitorIsOffline) {
                     if (configOfflineStorage && configOfflineStorage.push) {
                         configOfflineStorage.push(request);
                     }
@@ -3572,7 +3572,7 @@ if (typeof window.Piwik !== 'object') {
                     return;
                 }
 
-                if (configUserIsOffline) {
+                if (configVisitorIsOffline) {
                     for (var i in requests) {
                         if (configOfflineStorage && configOfflineStorage.push) {
                             configOfflineStorage.push(requests[i]);
@@ -6530,16 +6530,16 @@ if (typeof window.Piwik !== 'object') {
                 });
             };
 
-            this.setUserOffline = function (storage) {
-                configUserIsOffline = true;
+            this.setVisitorOffline = function (storage) {
+                configVisitorIsOffline = true;
 
                 if ('object' === typeof storage && 'function' === typeof storage.push) {
                     configOfflineStorage = storage;
                 }
             };
 
-            this.setUserOnline = function (requests) {
-                configUserIsOffline = false;
+            this.setVisitorOnline = function (requests) {
+                configVisitorIsOffline = false;
 
                 if (requests && requests.length) {
                     sendBulkRequest(requests);
