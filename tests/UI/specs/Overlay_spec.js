@@ -70,7 +70,7 @@ describe("Overlay", function () {
 
     it("should show stats for new links when dropdown opened", function (done) {
         expect.screenshot("page_new_links").to.be.capture(function (page) {
-            page.callMethod(function () {
+        
                 var pos = page.webpage.evaluate(function () {
                     var iframe = $('iframe'),
                         innerOffset = $('.dropdown-toggle', iframe.contents()).offset();
@@ -83,7 +83,6 @@ describe("Overlay", function () {
                 page.webpage.sendEvent('click', pos.x, pos.y);
                 
                 removeOptOutIframe(page);
-            });
            
         }, done);
     });
